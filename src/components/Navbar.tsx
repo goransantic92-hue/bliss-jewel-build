@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ShoppingBag, User, Menu, X, Heart, Instagram } from "lucide-react";
+import { ShoppingBag, Menu, X, Instagram } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 const navLinks = [
-  { label: "New In", to: "/#new" },
+  { label: "Home", to: "/" },
   { label: "Collections", to: "/collections" },
   { label: "Rings", to: "/category/rings" },
   { label: "Necklaces", to: "/category/necklaces" },
@@ -17,6 +18,7 @@ const navLinksRight = navLinks.slice(3);
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { totalQuantity } = useCart();
 
   return (
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
@@ -78,24 +80,17 @@ const Navbar = () => {
               >
                 <Instagram size={18} />
               </a>
-              <button type="button" aria-label="Search" className="text-muted-foreground hover:text-primary transition-colors">
-                <Search size={18} />
-              </button>
-              <button type="button" aria-label="Wishlist" className="hidden sm:block text-muted-foreground hover:text-primary transition-colors">
-                <Heart size={18} />
-              </button>
-              <button type="button" aria-label="Account" className="hidden md:block text-muted-foreground hover:text-primary transition-colors">
-                <User size={18} />
-              </button>
               <Link
                 to="/cart"
                 aria-label="Cart"
                 className="text-muted-foreground hover:text-primary transition-colors relative shrink-0"
               >
                 <ShoppingBag size={18} />
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-primary text-primary-foreground text-[9px] rounded-full flex items-center justify-center font-body">
-                  0
-                </span>
+                {totalQuantity > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[1rem] h-4 px-0.5 bg-primary text-primary-foreground text-[9px] rounded-full flex items-center justify-center font-body tabular-nums">
+                    {totalQuantity > 99 ? "99+" : totalQuantity}
+                  </span>
+                )}
               </Link>
             </div>
           </div>
@@ -122,10 +117,6 @@ const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-4 border-t border-border flex gap-6">
-                <span className="text-sm text-muted-foreground font-body">Account</span>
-                <span className="text-sm text-muted-foreground font-body">Wishlist</span>
-              </div>
             </div>
           </motion.div>
         )}

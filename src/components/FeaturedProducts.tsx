@@ -1,8 +1,13 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { Heart } from "lucide-react";
 import { LOREM_SHORT, MOCK_PRODUCTS } from "@/data/site";
+import { useCart } from "@/context/CartContext";
+import { getProductImageSrc } from "@/lib/productImages";
 
 const FeaturedProducts = () => {
+  const { addItem } = useCart();
+
   return (
     <section id="new" className="bg-card py-20 md:py-28">
       <div className="px-6 max-w-[1400px] mx-auto">
@@ -34,13 +39,47 @@ const FeaturedProducts = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.05 }}
+              className="group"
             >
-              <Link
-                to={`/product/${product.slug}`}
-                className="block border border-border bg-background p-6 md:p-8 min-h-[160px] flex flex-col justify-end hover:border-primary/40 transition-colors"
-              >
-                <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-3 font-body">{product.categoryLabel}</p>
-                <p className="text-lg text-primary font-body">{product.price}</p>
+              <div className="relative aspect-[4/5] overflow-hidden bg-background mb-4">
+                <img
+                  src={getProductImageSrc(product.slug)}
+                  alt=""
+                  loading="lazy"
+                  width={640}
+                  height={800}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
+                />
+                <Link
+                  to={`/product/${product.slug}`}
+                  className="absolute inset-0 z-[1]"
+                  aria-label="Pogledaj proizvod"
+                />
+                <button
+                  type="button"
+                  aria-label="Add to wishlist"
+                  className="absolute top-3 right-3 z-[2] w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover:opacity-100 duration-300"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Heart size={16} />
+                </button>
+                <div className="absolute bottom-0 left-0 right-0 p-3 z-[2] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button
+                    type="button"
+                    className="w-full bg-background/90 backdrop-blur-sm text-foreground text-xs tracking-[0.15em] uppercase py-2.5 font-body hover:bg-primary hover:text-primary-foreground transition-colors"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      addItem(product.slug, 1);
+                    }}
+                  >
+                    Add to Bag
+                  </button>
+                </div>
+              </div>
+              <Link to={`/product/${product.slug}`} className="block">
+                <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1 font-body">{product.categoryLabel}</p>
+                <p className="text-sm text-primary font-body">{product.price}</p>
               </Link>
             </motion.div>
           ))}

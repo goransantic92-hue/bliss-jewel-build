@@ -1,9 +1,11 @@
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MOCK_COLLECTIONS, MOCK_PRODUCTS, LOREM_LONG } from "@/data/site";
+import { useCart } from "@/context/CartContext";
 
 const CollectionDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { addItem } = useCart();
   const col = MOCK_COLLECTIONS.find((c) => c.slug === slug);
 
   if (!col) {
@@ -46,14 +48,19 @@ const CollectionDetailPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
+              className="border border-border bg-card flex flex-col overflow-hidden hover:border-primary/50 transition-colors"
             >
-              <Link
-                to={`/product/${p.slug}`}
-                className="block border border-border bg-card p-6 min-h-[120px] flex flex-col justify-between hover:border-primary/50 transition-colors"
-              >
+              <Link to={`/product/${p.slug}`} className="flex flex-col justify-between p-6 min-h-[100px] flex-1">
                 <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground font-body">{p.categoryLabel}</p>
                 <p className="text-lg text-primary font-body">{p.price}</p>
               </Link>
+              <button
+                type="button"
+                className="border-t border-border py-3 text-[10px] tracking-[0.2em] uppercase text-foreground hover:bg-primary hover:text-primary-foreground transition-colors font-body"
+                onClick={() => addItem(p.slug, 1)}
+              >
+                Dodaj u korpu
+              </button>
             </motion.div>
           ))}
         </div>

@@ -27,16 +27,21 @@ export const MOCK_PRODUCTS: {
   category: CategorySlug;
   categoryLabel: string;
   price: string;
+  priceEur: number;
 }[] = [
-  { slug: "item-1", category: "necklaces", categoryLabel: "Necklaces", price: "€189" },
-  { slug: "item-2", category: "rings", categoryLabel: "Rings", price: "€145" },
-  { slug: "item-3", category: "earrings", categoryLabel: "Earrings", price: "€225" },
-  { slug: "item-4", category: "bracelets", categoryLabel: "Bracelets", price: "€165" },
-  { slug: "item-5", category: "rings", categoryLabel: "Rings", price: "€275" },
-  { slug: "item-6", category: "necklaces", categoryLabel: "Necklaces", price: "€340" },
-  { slug: "item-7", category: "earrings", categoryLabel: "Earrings", price: "€195" },
-  { slug: "item-8", category: "bracelets", categoryLabel: "Bracelets", price: "€420" },
+  { slug: "item-1", category: "necklaces", categoryLabel: "Necklaces", price: "€189", priceEur: 189 },
+  { slug: "item-2", category: "rings", categoryLabel: "Rings", price: "€145", priceEur: 145 },
+  { slug: "item-3", category: "earrings", categoryLabel: "Earrings", price: "€225", priceEur: 225 },
+  { slug: "item-4", category: "bracelets", categoryLabel: "Bracelets", price: "€165", priceEur: 165 },
+  { slug: "item-5", category: "rings", categoryLabel: "Rings", price: "€275", priceEur: 275 },
+  { slug: "item-6", category: "necklaces", categoryLabel: "Necklaces", price: "€340", priceEur: 340 },
+  { slug: "item-7", category: "earrings", categoryLabel: "Earrings", price: "€195", priceEur: 195 },
+  { slug: "item-8", category: "bracelets", categoryLabel: "Bracelets", price: "€420", priceEur: 420 },
 ];
+
+export function getProductBySlug(slug: string) {
+  return MOCK_PRODUCTS.find((p) => p.slug === slug);
+}
 
 export const MOCK_COLLECTIONS: { slug: string; title: string }[] = [
   { slug: "essentials", title: "Essentials" },

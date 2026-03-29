@@ -1,9 +1,12 @@
 import { Link, useParams } from "react-router-dom";
 import { LOREM_LONG, LOREM_PARA, MOCK_PRODUCTS } from "@/data/site";
+import { useCart } from "@/context/CartContext";
+import { getProductImageSrc } from "@/lib/productImages";
 
 const ProductPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const product = MOCK_PRODUCTS.find((p) => p.slug === slug);
+  const { addItem } = useCart();
 
   if (!product) {
     return (
@@ -15,6 +18,8 @@ const ProductPage = () => {
       </div>
     );
   }
+
+  const img = getProductImageSrc(product.slug);
 
   return (
     <div className="bg-background">
@@ -32,8 +37,8 @@ const ProductPage = () => {
         </nav>
 
         <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
-          <div className="aspect-[4/5] bg-card border border-border flex items-center justify-center">
-            <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-body">Lorem · preview</span>
+          <div className="aspect-[4/5] bg-card border border-border overflow-hidden">
+            <img src={img} alt="" className="w-full h-full object-cover" width={800} height={1000} />
           </div>
 
           <div>
@@ -43,12 +48,13 @@ const ProductPage = () => {
             <p className="text-sm text-muted-foreground leading-relaxed mb-4 font-body">{LOREM_PARA}</p>
             <p className="text-sm text-muted-foreground leading-relaxed mb-10 font-body">{LOREM_LONG}</p>
             <div className="flex flex-wrap gap-4">
-              <Link
-                to="/cart"
+              <button
+                type="button"
                 className="inline-block bg-gold-gradient text-primary-foreground px-10 py-3.5 text-xs tracking-[0.2em] uppercase font-body hover:opacity-90 transition-opacity"
+                onClick={() => addItem(product.slug, 1)}
               >
                 Add to bag
-              </Link>
+              </button>
               <Link
                 to={`/category/${product.category}`}
                 className="inline-block text-xs tracking-[0.2em] uppercase text-primary border border-primary px-8 py-3.5 hover:bg-primary hover:text-primary-foreground transition-colors font-body"
