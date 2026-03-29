@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import brandImg from "@/assets/brand-story.jpg";
+import { LOREM_LONG, LOREM_PARA } from "@/data/site";
 
 const BrandStory = () => {
   return (
@@ -13,14 +15,7 @@ const BrandStory = () => {
             transition={{ duration: 0.8 }}
             className="relative aspect-[4/3] md:aspect-auto"
           >
-            <img
-              src={brandImg}
-              alt="Bliss jewelry editorial"
-              loading="lazy"
-              width={1920}
-              height={1080}
-              className="w-full h-full object-cover"
-            />
+            <img src={brandImg} alt="" loading="lazy" width={1920} height={1080} className="w-full h-full object-cover" />
           </motion.div>
 
           <motion.div
@@ -31,24 +26,20 @@ const BrandStory = () => {
             className="bg-card flex items-center p-10 md:p-16 lg:p-20"
           >
             <div>
-              <p className="text-xs tracking-[0.3em] uppercase text-primary mb-4 font-body">Our Story</p>
+              <p className="text-xs tracking-[0.3em] uppercase text-primary mb-4 font-body">Lorem story</p>
               <h2 className="font-display text-3xl md:text-4xl text-foreground mb-6 leading-tight">
-                Crafted with
+                Lorem ipsum
                 <br />
-                <span className="italic text-primary">Intention</span>
+                <span className="italic text-primary">dolor sit</span>
               </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-4 font-body">
-                Bliss was born from a belief that jewelry should be more than adornment — it should be a reflection of who you are. Every piece is meticulously handcrafted using ethically sourced materials.
-              </p>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-8 font-body">
-                From our atelier, we create timeless designs that transcend trends, celebrating the quiet luxury of everyday moments.
-              </p>
-              <a
-                href="#"
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4 font-body">{LOREM_PARA}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-8 font-body">{LOREM_LONG}</p>
+              <Link
+                to="/collections"
                 className="inline-block text-xs tracking-[0.2em] uppercase text-primary border border-primary px-8 py-3 hover:bg-primary hover:text-primary-foreground transition-colors duration-300 font-body"
               >
-                Discover More
-              </a>
+                Lorem more
+              </Link>
             </div>
           </motion.div>
         </div>
