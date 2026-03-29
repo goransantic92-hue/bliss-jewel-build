@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* Palette: 60% #FFF9EF cream · 30% #BDC5B0 sage · 10% #C4A69B accent */
+  /* Palette: 60% #FFF9EF cream · 30% #BDC5B0 sage · 10% rose gold #B76E79 */
   :root {
     --background: 38 100% 97%;
     --foreground: 25 18% 16%;
@@ -16,7 +16,7 @@
     --popover: 38 100% 97%;
     --popover-foreground: 25 18% 16%;
 
-    --primary: 17 25% 69%;
+    --primary: 351 33% 57%;
     --primary-foreground: 38 100% 97%;
 
     --secondary: 82 14% 68%;
@@ -33,14 +33,14 @@
 
     --border: 82 14% 62%;
     --input: 82 14% 62%;
-    --ring: 17 25% 69%;
+    --ring: 351 33% 57%;
 
     --radius: 0.25rem;
 
     --cream: 38 100% 97%;
-    --gold: 17 25% 69%;
-    --gold-light: 17 28% 76%;
-    --rose: 17 25% 69%;
+    --gold: 351 33% 57%;
+    --gold-light: 351 35% 66%;
+    --rose: 351 33% 57%;
     --charcoal: 82 16% 73%;
     --charcoal-deep: 25 18% 16%;
 
@@ -49,12 +49,12 @@
 
     --sidebar-background: 82 16% 73%;
     --sidebar-foreground: 25 18% 16%;
-    --sidebar-primary: 17 25% 69%;
+    --sidebar-primary: 351 33% 57%;
     --sidebar-primary-foreground: 38 100% 97%;
     --sidebar-accent: 82 14% 68%;
     --sidebar-accent-foreground: 25 18% 16%;
     --sidebar-border: 82 14% 62%;
-    --sidebar-ring: 17 25% 69%;
+    --sidebar-ring: 351 33% 57%;
   }
 }
 
@@ -74,17 +74,17 @@
 
 @layer utilities {
   .text-gold-gradient {
-    background: linear-gradient(135deg, hsl(17 25% 69%), hsl(17 25% 58%));
+    background: linear-gradient(135deg, hsl(351 33% 57%), hsl(351 33% 46%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .bg-gold-gradient {
-    background: linear-gradient(135deg, hsl(17 25% 69%), hsl(17 25% 58%));
+    background: linear-gradient(135deg, hsl(351 33% 57%), hsl(351 33% 46%));
   }
 
   .border-gold-subtle {
-    border-color: hsl(17 25% 69% / 0.25);
+    border-color: hsl(351 33% 57% / 0.25);
   }
 }
