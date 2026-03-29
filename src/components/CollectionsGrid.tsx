@@ -44,10 +44,10 @@ const CollectionsGrid = () => {
               height={1000}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-charcoal-deep/75 via-charcoal-deep/10 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
-              <h3 className="font-display text-xl md:text-2xl text-foreground mb-1">{col.name}</h3>
-              <p className="text-xs tracking-[0.15em] text-muted-foreground font-body">{col.count}</p>
+              <h3 className="font-display text-xl md:text-2xl text-primary-foreground mb-1 drop-shadow-sm">{col.name}</h3>
+              <p className="text-xs tracking-[0.15em] text-primary-foreground/85 font-body">{col.count}</p>
             </div>
           </motion.a>
         ))}

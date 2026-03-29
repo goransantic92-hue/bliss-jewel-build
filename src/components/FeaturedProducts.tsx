@@ -22,7 +22,8 @@ const products = [
 
 const FeaturedProducts = () => {
   return (
-    <section id="new" className="py-20 md:py-28 px-6 max-w-[1400px] mx-auto">
+    <section id="new" className="bg-card py-20 md:py-28">
+      <div className="px-6 max-w-[1400px] mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -52,7 +53,7 @@ const FeaturedProducts = () => {
             transition={{ duration: 0.5, delay: i * 0.05 }}
             className="group cursor-pointer"
           >
-            <div className="relative aspect-[4/5] overflow-hidden bg-card mb-4">
+            <div className="relative aspect-[4/5] overflow-hidden bg-background mb-4">
               <img
                 src={product.image}
                 alt={product.name}
@@ -87,6 +88,7 @@ const FeaturedProducts = () => {
         >
           View All Products
         </a>
+      </div>
       </div>
     </section>
   );
