@@ -44,7 +44,7 @@ const CategoryPage = () => {
             >
               <Link to={`/product/${p.slug}`} className="flex flex-col justify-between p-6 md:p-8 min-h-[100px] flex-1">
                 <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground font-body">{p.categoryLabel}</p>
-                <p className="text-lg text-primary font-body">{p.price}</p>
+                <p className="text-lg text-price font-body">{p.price}</p>
               </Link>
               <button
                 type="button"

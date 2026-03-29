@@ -79,7 +79,7 @@ const FeaturedProducts = () => {
               </div>
               <Link to={`/product/${product.slug}`} className="block">
                 <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1 font-body">{product.categoryLabel}</p>
-                <p className="text-sm text-primary font-body">{product.price}</p>
+                <p className="text-sm text-price font-body">{product.price}</p>
               </Link>
             </motion.div>
           ))}

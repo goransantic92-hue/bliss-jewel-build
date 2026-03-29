@@ -61,6 +61,7 @@ export default {
           DEFAULT: "hsl(var(--charcoal))",
           deep: "hsl(var(--charcoal-deep))",
         },
+        price: "var(--price)",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

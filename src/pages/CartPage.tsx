@@ -42,7 +42,7 @@ const CartPage = () => {
                         <Link to={`/product/${line.slug}`} className="font-body text-foreground hover:text-primary">
                           Proizvod · {product.slug}
                         </Link>
-                        <p className="text-sm text-primary font-body mt-1">{product.price} / kom</p>
+                        <p className="text-sm text-price font-body mt-1">{product.price} / kom</p>
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="flex items-center border border-border">
@@ -64,7 +64,7 @@ const CartPage = () => {
                             <Plus size={16} />
                           </button>
                         </div>
-                        <p className="text-sm font-body tabular-nums min-w-[4rem] text-right">€{lineTotal}</p>
+                        <p className="text-sm font-body tabular-nums min-w-[4rem] text-right text-price">€{lineTotal}</p>
                         <button
                           type="button"
                           aria-label="Ukloni"
@@ -83,7 +83,7 @@ const CartPage = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 border-t border-primary pt-8">
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-body mb-1">Ukupno</p>
-                <p className="font-display text-2xl text-foreground">€{subtotalEur}</p>
+                <p className="font-display text-2xl text-price">€{subtotalEur}</p>
               </div>
               <button
                 type="button"

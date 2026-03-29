@@ -44,7 +44,7 @@ const ProductPage = () => {
           <div>
             <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-3 font-body">{product.categoryLabel}</p>
             <h1 className="font-display text-3xl md:text-4xl text-foreground mb-4">Lorem ipsum product</h1>
-            <p className="text-2xl text-primary font-body mb-8">{product.price}</p>
+            <p className="text-2xl text-price font-body mb-8">{product.price}</p>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4 font-body">{LOREM_PARA}</p>
             <p className="text-sm text-muted-foreground leading-relaxed mb-10 font-body">{LOREM_LONG}</p>
             <div className="flex flex-wrap gap-4">
