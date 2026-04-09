@@ -9,10 +9,11 @@ import type { CategorySlug } from "@/data/site";
 import { LOREM_SHORT } from "@/data/site";
 
 const images: Record<CategorySlug, string> = {
-  rings: ringsImg,
-  necklaces: necklacesImg,
-  earrings: earringsImg,
-  bracelets: braceletsImg,
+  ogrlice: necklacesImg,
+  mindjuse: earringsImg,
+  narukvice: braceletsImg,
+  brosevi: ringsImg,
+  aksesoari: earringsImg,
 };
 
 const CollectionsGrid = () => {
@@ -30,14 +31,14 @@ const CollectionsGrid = () => {
         <p className="text-sm text-muted-foreground max-w-xl mx-auto font-body">{LOREM_SHORT}</p>
       </motion.div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
         {CATEGORIES.map((col, i) => (
           <motion.div
             key={col.slug}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: i * 0.1 }}
+            transition={{ duration: 0.6, delay: i * 0.08 }}
           >
             <Link
               to={`/category/${col.slug}`}
@@ -53,7 +54,7 @@ const CollectionsGrid = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal-deep/75 via-charcoal-deep/10 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
-                <h3 className="font-display text-xl md:text-2xl text-primary-foreground drop-shadow-sm">{col.label}</h3>
+                <h3 className="font-display text-lg md:text-xl text-primary-foreground drop-shadow-sm leading-tight">{col.label}</h3>
               </div>
             </Link>
           </motion.div>

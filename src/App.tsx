@@ -11,6 +11,8 @@ import ProductPage from "@/pages/ProductPage";
 import CartPage from "@/pages/CartPage";
 import CollectionsPage from "@/pages/CollectionsPage";
 import CollectionDetailPage from "@/pages/CollectionDetailPage";
+import KakoPorucitiPage from "@/pages/KakoPorucitiPage";
+import PolitikaPrivatnostiPage from "@/pages/PolitikaPrivatnostiPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +32,8 @@ const App = () => (
             <Route path="/cart" element={<CartPage />} />
             <Route path="/collections" element={<CollectionsPage />} />
             <Route path="/collections/:slug" element={<CollectionDetailPage />} />
+            <Route path="/kako-poruciti" element={<KakoPorucitiPage />} />
+            <Route path="/politika-privatnosti" element={<PolitikaPrivatnostiPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

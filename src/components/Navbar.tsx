@@ -3,18 +3,10 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Menu, X, Instagram } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { NAV_LINKS } from "@/data/site";
 
-const navLinks = [
-  { label: "Home", to: "/" },
-  { label: "Collections", to: "/collections" },
-  { label: "Rings", to: "/category/rings" },
-  { label: "Necklaces", to: "/category/necklaces" },
-  { label: "Earrings", to: "/category/earrings" },
-  { label: "Bracelets", to: "/category/bracelets" },
-];
-
-const navLinksLeft = navLinks.slice(0, 3);
-const navLinksRight = navLinks.slice(3);
+const navLinksLeft = NAV_LINKS.slice(0, 3);
+const navLinksRight = NAV_LINKS.slice(3);
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -33,7 +25,7 @@ const Navbar = () => {
             >
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
-            <div className="hidden md:flex items-center justify-end gap-6 lg:gap-8 flex-1 pr-2">
+            <div className="hidden md:flex items-center justify-end gap-4 lg:gap-6 xl:gap-8 flex-1 pr-2 flex-wrap">
               {navLinksLeft.map((link) => (
                 <Link
                   key={link.label}
@@ -49,17 +41,18 @@ const Navbar = () => {
           <div className="flex justify-center min-w-0">
             <Link to="/" className="flex items-center justify-center">
               <img
-                src="/bliss-logo.svg"
+                src="/bliss-logo.webp"
                 alt="Bliss Nakit"
-                className="h-8 md:h-10 w-auto max-w-[min(200px,42vw)]"
-                width={200}
-                height={48}
+                className="h-9 md:h-11 w-auto max-h-11 max-w-[min(220px,50vw)] object-contain"
+                width={280}
+                height={280}
+                decoding="async"
               />
             </Link>
           </div>
 
           <div className="flex items-center justify-end gap-2 sm:gap-3 md:gap-4 min-w-0 w-full">
-            <div className="hidden md:flex items-center gap-6 lg:gap-8 mr-auto pr-2">
+            <div className="hidden md:flex items-center gap-4 lg:gap-6 xl:gap-8 mr-auto pr-2 flex-wrap justify-end">
               {navLinksRight.map((link) => (
                 <Link
                   key={link.label}
@@ -106,16 +99,17 @@ const Navbar = () => {
             transition={{ duration: 0.3 }}
             className="md:hidden overflow-hidden bg-background border-t border-border"
           >
-            <div className="px-6 py-6 space-y-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  to={link.to}
-                  className="block text-sm tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors font-body"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {link.label}
-                </Link>
+            <div className="px-4 py-4 space-y-0">
+              {NAV_LINKS.map((link) => (
+                <div key={link.label} className="border-b border-primary">
+                  <Link
+                    to={link.to}
+                    className="block py-3.5 text-sm tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors font-body"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                </div>
               ))}
             </div>
           </motion.div>
