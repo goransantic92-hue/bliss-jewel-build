@@ -32,10 +32,26 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <Link
+                  to="/collections"
+                  className="text-xs text-muted-foreground hover:text-primary transition-colors tracking-wide font-body"
+                >
+                  Bliss kolekcija
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/kako-poruciti"
                   className="text-xs text-muted-foreground hover:text-primary transition-colors tracking-wide font-body"
                 >
                   Kako poručiti
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/kontakt"
+                  className="text-xs text-muted-foreground hover:text-primary transition-colors tracking-wide font-body"
+                >
+                  Kontakt
                 </Link>
               </li>
               <li>

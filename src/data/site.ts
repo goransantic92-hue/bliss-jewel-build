@@ -50,9 +50,10 @@ export const MOCK_COLLECTIONS: { slug: string; title: string }[] = [
   { slug: "bridal", title: "Bridal" },
 ];
 
-/** Navbar: Home + Kolekcije + sve kategorije */
-export const NAV_LINKS = [
+/** Navbar glavni linkovi (kategorije su u padajućem meniju „Kategorije”) */
+export const NAV_MAIN_LINKS = [
   { label: "Home", to: "/" },
-  { label: "Kolekcije", to: "/collections" },
-  ...CATEGORIES.map((c) => ({ label: c.label, to: `/category/${c.slug}` })),
+  { label: "Bliss kolekcija", to: "/collections" },
+  { label: "Kako poručiti", to: "/kako-poruciti" },
+  { label: "Kontakt", to: "/kontakt" },
 ] as const;

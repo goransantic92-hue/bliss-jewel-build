@@ -13,6 +13,7 @@ import CollectionsPage from "@/pages/CollectionsPage";
 import CollectionDetailPage from "@/pages/CollectionDetailPage";
 import KakoPorucitiPage from "@/pages/KakoPorucitiPage";
 import PolitikaPrivatnostiPage from "@/pages/PolitikaPrivatnostiPage";
+import KontaktPage from "@/pages/KontaktPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/collections/:slug" element={<CollectionDetailPage />} />
             <Route path="/kako-poruciti" element={<KakoPorucitiPage />} />
             <Route path="/politika-privatnosti" element={<PolitikaPrivatnostiPage />} />
+            <Route path="/kontakt" element={<KontaktPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
