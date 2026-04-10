@@ -177,7 +177,7 @@ const Navbar = () => {
                 <div key={link.label}>
                   <Link
                     to={link.to}
-                    className="inline-flex py-3.5 text-sm tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors font-body border-b border-primary"
+                    className="inline-flex w-[15ch] pt-3.5 pb-[0.4375rem] text-sm tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors font-body border-b border-primary"
                     onClick={() => setMobileOpen(false)}
                   >
                     {link.label}
@@ -187,7 +187,7 @@ const Navbar = () => {
               <div>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-2 py-3.5 text-sm tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors font-body text-left border-b border-primary"
+                  className="inline-flex w-[15ch] items-center justify-between pt-3.5 pb-[0.4375rem] text-sm tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors font-body text-left border-b border-primary"
                   aria-expanded={mobileCategoriesOpen}
                   onClick={() => setMobileCategoriesOpen((v) => !v)}
                 >
@@ -208,7 +208,7 @@ const Navbar = () => {
                       <div key={c.slug} className="pl-3">
                         <Link
                           to={`/category/${c.slug}`}
-                          className="inline-flex py-3 text-sm tracking-[0.12em] text-muted-foreground hover:text-primary transition-colors font-body border-b border-primary"
+                          className="inline-flex w-[15ch] pt-3 pb-[0.375rem] text-sm tracking-[0.12em] text-muted-foreground hover:text-primary transition-colors font-body border-b border-primary"
                           onClick={() => {
                             setMobileOpen(false);
                             setMobileCategoriesOpen(false);
