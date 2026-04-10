@@ -99,8 +99,15 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <Link to="/" className="font-display text-xl tracking-[0.15em] text-gold-gradient uppercase">
-            bliss nakit
+          <Link to="/" className="inline-flex items-center justify-center" aria-label="Bliss Nakit početna">
+            <img
+              src="/bliss-logo.webp"
+              alt="Bliss Nakit"
+              className="h-10 md:h-12 w-auto max-w-[min(220px,70vw)] object-contain object-center"
+              width={280}
+              height={280}
+              decoding="async"
+            />
           </Link>
           <p className="text-[10px] text-muted-foreground tracking-wide font-body text-center md:text-right">
             © 2026 bliss nakit. Copyright.
