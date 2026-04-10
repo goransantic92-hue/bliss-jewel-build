@@ -34,7 +34,7 @@ const Navbar = () => {
   }, [desktopCategoriesOpen, closeDesktopCategories]);
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border overflow-visible">
+    <nav className="sticky top-0 z-50 bg-background border-b border-border overflow-visible">
       <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-16 md:h-20 overflow-visible">
         <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-3 items-center h-full gap-2 md:gap-4 min-h-0">
           <div className="flex items-center justify-start gap-3 md:gap-8 min-w-0">
@@ -62,13 +62,13 @@ const Navbar = () => {
           <div className="flex justify-center min-w-0 overflow-visible pointer-events-none md:pointer-events-auto">
             <Link
               to="/"
-              className="flex items-center justify-center overflow-visible max-h-[4.5rem] md:max-h-[5.25rem] -my-1 md:-my-2 pointer-events-auto"
+              className="flex items-center justify-center overflow-visible pointer-events-auto"
               aria-label="Bliss Nakit početna"
             >
               <img
                 src="/bliss-logo.webp"
                 alt="Bliss Nakit"
-                className="h-[2.85rem] w-auto sm:h-[3.15rem] md:h-[4.35rem] md:max-h-[min(4.35rem,calc(100vh-2rem))] max-w-[min(340px,72vw)] object-contain object-center drop-shadow-sm"
+                className="h-10 md:h-12 w-auto max-w-[min(220px,58vw)] object-contain object-center"
                 width={280}
                 height={280}
                 decoding="async"
@@ -80,8 +80,6 @@ const Navbar = () => {
             <div
               ref={desktopWrapRef}
               className="relative hidden md:block mr-auto pr-2"
-              onMouseEnter={() => setDesktopCategoriesOpen(true)}
-              onMouseLeave={() => setDesktopCategoriesOpen(false)}
             >
               <button
                 type="button"
@@ -108,7 +106,7 @@ const Navbar = () => {
                     transition={{ duration: 0.15 }}
                     className="absolute right-0 top-full z-[60] -mt-1 pt-1 w-52"
                   >
-                    <div className="rounded-md border border-border bg-background/98 backdrop-blur-md shadow-lg py-2 px-1">
+                    <div className="rounded-md border border-border bg-background shadow-lg py-2 px-1">
                       <ul className="space-y-0.5">
                         {CATEGORIES.map((c) => (
                           <li key={c.slug}>
