@@ -14,6 +14,8 @@ const Navbar = () => {
   const { totalQuantity } = useCart();
 
   const closeDesktopCategories = useCallback(() => setDesktopCategoriesOpen(false), []);
+  const desktopLeftLinks = NAV_MAIN_LINKS.filter((link) => link.label !== "Bliss kolekcija");
+  const desktopCollectionsLink = NAV_MAIN_LINKS.find((link) => link.label === "Bliss kolekcija");
 
   useEffect(() => {
     if (!desktopCategoriesOpen) return;
@@ -47,7 +49,7 @@ const Navbar = () => {
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
             <div className="hidden md:flex items-center justify-end gap-2.5 lg:gap-4 xl:gap-5 flex-1 pr-2 flex-wrap">
-              {NAV_MAIN_LINKS.map((link) => (
+              {desktopLeftLinks.map((link) => (
                 <Link
                   key={link.label}
                   to={link.to}
@@ -77,6 +79,14 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center justify-end gap-2 sm:gap-3 md:gap-4 min-w-0 w-full">
+            {desktopCollectionsLink && (
+              <Link
+                to={desktopCollectionsLink.to}
+                className="hidden md:block text-xs tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors duration-300 font-body whitespace-nowrap"
+              >
+                {desktopCollectionsLink.label}
+              </Link>
+            )}
             <div
               ref={desktopWrapRef}
               className="relative hidden md:block mr-auto pr-2"
@@ -164,20 +174,20 @@ const Navbar = () => {
           >
             <div className="px-4 py-4 space-y-0">
               {NAV_MAIN_LINKS.map((link) => (
-                <div key={link.label} className="border-b border-primary">
+                <div key={link.label}>
                   <Link
                     to={link.to}
-                    className="block py-3.5 text-sm tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors font-body"
+                    className="inline-flex py-3.5 text-sm tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors font-body border-b border-primary"
                     onClick={() => setMobileOpen(false)}
                   >
                     {link.label}
                   </Link>
                 </div>
               ))}
-              <div className="border-b border-primary">
+              <div>
                 <button
                   type="button"
-                  className="flex w-full items-center justify-between py-3.5 text-sm tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors font-body text-left"
+                  className="inline-flex items-center gap-2 py-3.5 text-sm tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors font-body text-left border-b border-primary"
                   aria-expanded={mobileCategoriesOpen}
                   onClick={() => setMobileCategoriesOpen((v) => !v)}
                 >
@@ -195,10 +205,10 @@ const Navbar = () => {
                     className="overflow-hidden"
                   >
                     {CATEGORIES.map((c) => (
-                      <div key={c.slug} className="border-b border-primary pl-3">
+                      <div key={c.slug} className="pl-3">
                         <Link
                           to={`/category/${c.slug}`}
-                          className="block py-3 text-sm tracking-[0.12em] text-muted-foreground hover:text-primary transition-colors font-body"
+                          className="inline-flex py-3 text-sm tracking-[0.12em] text-muted-foreground hover:text-primary transition-colors font-body border-b border-primary"
                           onClick={() => {
                             setMobileOpen(false);
                             setMobileCategoriesOpen(false);
