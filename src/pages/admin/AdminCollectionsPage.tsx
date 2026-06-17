@@ -55,20 +55,23 @@ export default function AdminCollectionsPage() {
       return;
     }
 
-    updateContent((p) => {
-      const categories = isNewCat
-        ? [...p.categories, category]
-        : p.categories.map((c) => (c.slug === editingCat.slug ? category : c));
+    updateContent(
+      (p) => {
+        const categories = isNewCat
+          ? [...p.categories, category]
+          : p.categories.map((c) => (c.slug === editingCat.slug ? category : c));
 
-      const products =
-        !isNewCat && editingCat.slug !== slug
-          ? p.products.map((prod) =>
-              prod.category === editingCat.slug ? { ...prod, category: slug, categoryLabel: category.label } : prod
-            )
-          : p.products;
+        const products =
+          !isNewCat && editingCat.slug !== slug
+            ? p.products.map((prod) =>
+                prod.category === editingCat.slug ? { ...prod, category: slug, categoryLabel: category.label } : prod
+              )
+            : p.products;
 
-      return { ...p, categories, products };
-    });
+        return { ...p, categories, products };
+      },
+      { immediate: true }
+    );
 
     toast.success(isNewCat ? "Kategorija dodata" : "Kategorija sačuvana");
     setEditingCat(null);
@@ -85,7 +88,7 @@ export default function AdminCollectionsPage() {
     updateContent((p) => ({
       ...p,
       categories: p.categories.filter((c) => c.slug !== slug),
-    }));
+    }), { immediate: true });
     toast.success("Kategorija obrisana");
   };
 

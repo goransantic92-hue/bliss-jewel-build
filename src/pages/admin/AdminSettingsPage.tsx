@@ -111,10 +111,11 @@ export default function AdminSettingsPage() {
 
       <section className="mt-10 p-4 bg-muted/30 rounded text-xs text-muted-foreground font-body space-y-2">
         <p>
-          Admin lozinka: <code>VITE_ADMIN_PASSWORD</code> i <code>ADMIN_PASSWORD</code> u Vercel Environment Variables.
+          Za trajno čuvanje (vidljivo svima posle refresh-a) u Vercel projektu idi na <strong>Storage</strong> → dodaj{" "}
+          <strong>Upstash Redis</strong> (ili Blob) i poveži sa projektom. Zatim redeploy.
         </p>
         <p>
-          Za live čuvanje obavezno uključi <strong>Vercel Blob</strong> storage za projekat (Vercel → Storage → Create → Blob).
+          Admin lozinka: <code>ADMIN_PASSWORD</code> i <code>VITE_ADMIN_PASSWORD</code> u Vercel Environment Variables.
         </p>
       </section>
     </div>

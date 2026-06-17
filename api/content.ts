@@ -1,21 +1,25 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { head, put } from "@vercel/blob";
+import { getStorageStatus, readStoredContent, writeStoredContent } from "./_lib/storage";
 
-const BLOB_PATHNAME = "bliss-site-content.json";
+function parseBody(req: VercelRequest): unknown | null {
+  if (!req.body) return null;
+  if (typeof req.body === "string") {
+    try {
+      return JSON.parse(req.body);
+    } catch {
+      return null;
+    }
+  }
+  return req.body;
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === "GET") {
-    try {
-      const blob = await head(BLOB_PATHNAME);
-      const response = await fetch(blob.url);
-      if (!response.ok) {
-        return res.status(404).json({ error: "not_found" });
-      }
-      const data = await response.json();
-      return res.status(200).json(data);
-    } catch {
-      return res.status(404).json({ error: "not_found" });
+    const data = await readStoredContent();
+    if (!data) {
+      return res.status(404).json({ error: "not_found", storage: getStorageStatus() });
     }
+    return res.status(200).json(data);
   }
 
   if (req.method === "PUT") {
@@ -26,24 +30,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ error: "unauthorized" });
     }
 
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      return res.status(503).json({ error: "blob_not_configured" });
+    const body = parseBody(req);
+    if (!body || typeof body !== "object") {
+      return res.status(400).json({ error: "invalid_body" });
     }
 
-    try {
-      await put(BLOB_PATHNAME, JSON.stringify(req.body), {
-        access: "public",
-        contentType: "application/json",
-        addRandomSuffix: false,
-        allowOverwrite: true,
+    const result = await writeStoredContent(body);
+    if (!result.ok) {
+      return res.status(result.error === "storage_not_configured" ? 503 : 500).json({
+        error: result.error,
+        storage: getStorageStatus(),
       });
-      return res.status(200).json({ ok: true });
-    } catch (error) {
-      console.error("Failed to save content:", error);
-      return res.status(500).json({ error: "save_failed" });
     }
+
+    return res.status(200).json({ ok: true, storage: getStorageStatus() });
   }
 
   res.setHeader("Allow", "GET, PUT");
   return res.status(405).json({ error: "method_not_allowed" });
 }
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "10mb",
+    },
+  },
+};

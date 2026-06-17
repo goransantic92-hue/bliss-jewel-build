@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, Home, Layers, FileText, Palette, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, Home, Layers, FileText, Palette, Settings, LogOut, Save } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useContent } from "@/context/ContentContext";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ const NAV = [
 
 export default function AdminLayout() {
   const { logout } = useAuth();
-  const { saveStatus } = useContent();
+  const { saveStatus, saveNow } = useContent();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -26,9 +26,11 @@ export default function AdminLayout() {
       ? "Čuvanje na server..."
       : saveStatus === "saved"
         ? "Sačuvano — vidljivo svima na sajtu"
-        : saveStatus === "error"
-          ? "Greška pri čuvanju"
-          : null;
+        : saveStatus === "local_only"
+          ? "Samo u ovom pregledaču — podesi Vercel KV/Blob storage"
+          : saveStatus === "error"
+            ? "Greška pri čuvanju — proveri storage u Vercelu"
+            : null;
 
   const handleLogout = () => {
     logout();
@@ -76,11 +78,19 @@ export default function AdminLayout() {
         {saveLabel && (
           <div
             className={cn(
-              "px-6 py-2 text-xs font-body border-b",
-              saveStatus === "error" ? "bg-destructive/10 text-destructive border-destructive/20" : "bg-primary/10 text-primary border-primary/20"
+              "px-6 py-2 text-xs font-body border-b flex items-center justify-between gap-4",
+              saveStatus === "error" || saveStatus === "local_only"
+                ? "bg-destructive/10 text-destructive border-destructive/20"
+                : "bg-primary/10 text-primary border-primary/20"
             )}
           >
-            {saveLabel}
+            <span>{saveLabel}</span>
+            {(saveStatus === "error" || saveStatus === "local_only") && (
+              <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => void saveNow()}>
+                <Save size={12} />
+                Pokušaj ponovo
+              </Button>
+            )}
           </div>
         )}
         <div className="max-w-5xl mx-auto p-6 md:p-10">

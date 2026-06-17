@@ -11,20 +11,30 @@ import {
 import { toast } from "sonner";
 import { DEFAULT_CONTENT } from "@/data/defaultContent";
 import { useAuth } from "@/context/AuthContext";
-import { fetchRemoteContent, saveRemoteContent } from "@/lib/contentApi";
+import {
+  fetchRemoteContent,
+  loadLocalContent,
+  saveLocalContent,
+  saveRemoteContent,
+} from "@/lib/contentApi";
 import { syncCategoryLabels } from "@/lib/contentUtils";
 import { applyTheme } from "@/lib/theme";
 import type { SiteContent } from "@/types/content";
 
 const ContentContext = createContext<ContentContextValue | null>(null);
 
-export type SaveStatus = "idle" | "saving" | "saved" | "error";
+export type SaveStatus = "idle" | "saving" | "saved" | "error" | "local_only";
+
+type UpdateOptions = {
+  immediate?: boolean;
+};
 
 type ContentContextValue = {
   content: SiteContent;
   isLoading: boolean;
   saveStatus: SaveStatus;
-  updateContent: (updater: (prev: SiteContent) => SiteContent) => void;
+  updateContent: (updater: (prev: SiteContent) => SiteContent, options?: UpdateOptions) => void;
+  saveNow: () => Promise<void>;
   resetContent: () => void;
   getProductBySlug: (slug: string) => SiteContent["products"][0] | undefined;
   getCollectionBySlug: (slug: string) => SiteContent["collections"][0] | undefined;
@@ -47,6 +57,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const contentRef = useRef(content);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingSaveRef = useRef(false);
 
   contentRef.current = content;
 
@@ -55,7 +66,16 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     (async () => {
       const remote = await fetchRemoteContent();
       if (!cancelled && remote) {
-        setContent(syncCategoryLabels(remote));
+        const synced = syncCategoryLabels(remote);
+        setContent(synced);
+        saveLocalContent(synced);
+        setIsLoading(false);
+        return;
+      }
+
+      const local = loadLocalContent();
+      if (!cancelled && local) {
+        setContent(syncCategoryLabels(local));
         setIsLoading(false);
         return;
       }
@@ -75,9 +95,15 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
   const persistContent = useCallback(
     async (next: SiteContent) => {
-      const password = getAdminPassword();
-      if (!password) return;
+      saveLocalContent(next);
 
+      const password = getAdminPassword();
+      if (!password) {
+        setSaveStatus("local_only");
+        return;
+      }
+
+      pendingSaveRef.current = false;
       setSaveStatus("saving");
       const result = await saveRemoteContent(next, password);
 
@@ -86,36 +112,55 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      setSaveStatus("error");
-      if (result.error === "blob_not_configured") {
-        toast.error("Vercel Blob nije podešen", {
-          description: "U Vercel dashboardu dodaj Blob storage za ovaj projekat.",
+      setSaveStatus(result.error === "storage_not_configured" ? "local_only" : "error");
+
+      if (result.error === "storage_not_configured") {
+        toast.error("Server storage nije podešen", {
+          description: "U Vercel → Storage dodaj KV ili Blob. Do tada promene su samo u ovom pregledaču.",
         });
       } else if (result.error === "network_error") {
-        toast.error("Nema konekcije sa serverom");
+        toast.error("Nema konekcije sa serverom — sačuvano lokalno u pregledaču");
       } else {
-        toast.error("Čuvanje nije uspelo");
+        toast.error("Čuvanje na server nije uspelo — sačuvano lokalno u pregledaču");
       }
     },
     [getAdminPassword]
   );
 
+  const saveNow = useCallback(async () => {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+    await persistContent(contentRef.current);
+  }, [persistContent]);
+
   const scheduleSave = useCallback(
-    (next: SiteContent) => {
+    (next: SiteContent, immediate = false) => {
+      saveLocalContent(next);
       if (!isAdmin) return;
+
+      if (immediate) {
+        if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+        void persistContent(next);
+        return;
+      }
+
+      pendingSaveRef.current = true;
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
       saveTimerRef.current = setTimeout(() => {
+        pendingSaveRef.current = false;
         void persistContent(next);
-      }, 600);
+      }, 400);
     },
     [isAdmin, persistContent]
   );
 
   const updateContent = useCallback(
-    (updater: (prev: SiteContent) => SiteContent) => {
+    (updater: (prev: SiteContent) => SiteContent, options?: UpdateOptions) => {
       setContent((prev) => {
         const next = syncCategoryLabels(updater(prev));
-        scheduleSave(next);
+        scheduleSave(next, options?.immediate);
         return next;
       });
     },
@@ -125,14 +170,25 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   const resetContent = useCallback(() => {
     const next = syncCategoryLabels(DEFAULT_CONTENT);
     setContent(next);
-    scheduleSave(next);
+    scheduleSave(next, true);
   }, [scheduleSave]);
 
   useEffect(() => {
+    const flush = () => {
+      if (!pendingSaveRef.current || !isAdmin) return;
+      const password = getAdminPassword();
+      if (!password) return;
+      void saveRemoteContent(contentRef.current, password);
+    };
+
+    window.addEventListener("beforeunload", flush);
+    window.addEventListener("pagehide", flush);
     return () => {
+      window.removeEventListener("beforeunload", flush);
+      window.removeEventListener("pagehide", flush);
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
-  }, []);
+  }, [isAdmin, getAdminPassword]);
 
   const getProductBySlug = useCallback(
     (slug: string) => content.products.find((p) => p.slug === slug),
@@ -150,11 +206,12 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       isLoading,
       saveStatus,
       updateContent,
+      saveNow,
       resetContent,
       getProductBySlug,
       getCollectionBySlug,
     }),
-    [content, isLoading, saveStatus, updateContent, resetContent, getProductBySlug, getCollectionBySlug]
+    [content, isLoading, saveStatus, updateContent, saveNow, resetContent, getProductBySlug, getCollectionBySlug]
   );
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
