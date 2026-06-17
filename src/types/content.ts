@@ -1,7 +1,7 @@
-export type CategorySlug = "ogrlice" | "mindjuse" | "narukvice" | "brosevi" | "aksesoari";
+export type CategorySlug = string;
 
 export interface Category {
-  slug: CategorySlug;
+  slug: string;
   label: string;
   image: string;
   description: string;
@@ -10,7 +10,7 @@ export interface Category {
 export interface Product {
   slug: string;
   name: string;
-  category: CategorySlug;
+  category: string;
   categoryLabel: string;
   priceEur: number;
   price: string;

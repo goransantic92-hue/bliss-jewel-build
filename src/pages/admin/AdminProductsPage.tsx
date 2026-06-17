@@ -9,25 +9,14 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MediaInput } from "@/components/admin/MediaInput";
-import { formatPrice } from "@/lib/contentUtils";
-import type { Product, CategorySlug } from "@/types/content";
+import { formatPrice, slugify } from "@/lib/contentUtils";
+import type { Product } from "@/types/content";
 import { toast } from "sonner";
 
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[čć]/g, "c")
-    .replace(/[šś]/g, "s")
-    .replace(/[žź]/g, "z")
-    .replace(/đ/g, "dj")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
-
-const emptyProduct = (categories: { slug: CategorySlug; label: string }[]): Product => ({
+const emptyProduct = (categories: { slug: string; label: string }[]): Product => ({
   slug: "",
   name: "",
-  category: categories[0]?.slug ?? "ogrlice",
+  category: categories[0]?.slug ?? "",
   categoryLabel: categories[0]?.label ?? "Ogrlice",
   priceEur: 0,
   price: "€0",
@@ -156,7 +145,7 @@ export default function AdminProductsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Kategorija</Label>
-                  <Select value={editing.category} onValueChange={(v) => setEditing({ ...editing, category: v as CategorySlug })}>
+                  <Select value={editing.category} onValueChange={(v) => setEditing({ ...editing, category: v })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

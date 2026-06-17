@@ -1,5 +1,16 @@
 import type { Product, SiteContent } from "@/types/content";
 
+export function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[čć]/g, "c")
+    .replace(/[šś]/g, "s")
+    .replace(/[žź]/g, "z")
+    .replace(/đ/g, "dj")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 export function formatPrice(eur: number): string {
   return `€${eur}`;
 }
