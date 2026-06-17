@@ -27,7 +27,7 @@ export default function AdminLayout() {
       : saveStatus === "saved"
         ? "Sačuvano — vidljivo svima na sajtu"
         : saveStatus === "local_only"
-          ? "Samo u ovom pregledaču — podesi Vercel KV/Blob storage"
+          ? "Samo u ovom pregledaču — dodaj Upstash Redis u Vercel Storage"
           : saveStatus === "error"
             ? "Greška pri čuvanju — proveri storage u Vercelu"
             : null;

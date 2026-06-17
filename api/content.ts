@@ -1,5 +1,115 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getStorageStatus, readStoredContent, writeStoredContent } from "./_lib/storage";
+
+const STORAGE_KEY = "bliss-site-content";
+const BLOB_PATHNAME = "bliss-site-content.json";
+
+type StorageError = "storage_not_configured" | "write_failed";
+
+function redisConfig() {
+  const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
+  if (!url || !token) return null;
+  return { url: url.replace(/\/$/, ""), token };
+}
+
+function getStorageStatus(): "redis" | "blob" | "none" {
+  if (redisConfig()) return "redis";
+  if (process.env.BLOB_READ_WRITE_TOKEN) return "blob";
+  return "none";
+}
+
+async function redisCommand<T>(command: (string | number)[]): Promise<T | null> {
+  const cfg = redisConfig();
+  if (!cfg) return null;
+
+  const res = await fetch(cfg.url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${cfg.token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(command),
+  });
+
+  if (!res.ok) return null;
+  const json = (await res.json()) as { result?: T };
+  return json.result ?? null;
+}
+
+async function readFromRedis(): Promise<unknown | null> {
+  try {
+    const raw = await redisCommand<string>(["GET", STORAGE_KEY]);
+    if (!raw) return null;
+    return JSON.parse(raw) as unknown;
+  } catch (error) {
+    console.error("Redis read failed:", error);
+    return null;
+  }
+}
+
+async function writeToRedis(data: unknown): Promise<boolean> {
+  try {
+    const result = await redisCommand<string>(["SET", STORAGE_KEY, JSON.stringify(data)]);
+    return result === "OK";
+  } catch (error) {
+    console.error("Redis write failed:", error);
+    return false;
+  }
+}
+
+async function readFromBlob(): Promise<unknown | null> {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return null;
+
+  try {
+    const { list } = await import("@vercel/blob");
+    const { blobs } = await list({ prefix: BLOB_PATHNAME, limit: 1 });
+    const blob = blobs.find((b) => b.pathname === BLOB_PATHNAME) ?? blobs[0];
+    if (!blob) return null;
+
+    const response = await fetch(blob.url, { cache: "no-store" });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error("Blob read failed:", error);
+    return null;
+  }
+}
+
+async function writeToBlob(data: unknown): Promise<boolean> {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return false;
+
+  try {
+    const { put } = await import("@vercel/blob");
+    await put(BLOB_PATHNAME, JSON.stringify(data), {
+      access: "public",
+      contentType: "application/json",
+      addRandomSuffix: false,
+      allowOverwrite: true,
+    });
+    return true;
+  } catch (error) {
+    console.error("Blob write failed:", error);
+    return false;
+  }
+}
+
+async function readStoredContent(): Promise<unknown | null> {
+  return (await readFromRedis()) ?? (await readFromBlob());
+}
+
+async function writeStoredContent(data: unknown): Promise<{ ok: true } | { ok: false; error: StorageError }> {
+  if (redisConfig()) {
+    const ok = await writeToRedis(data);
+    return ok ? { ok: true } : { ok: false, error: "write_failed" };
+  }
+
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const ok = await writeToBlob(data);
+    return ok ? { ok: true } : { ok: false, error: "write_failed" };
+  }
+
+  return { ok: false, error: "storage_not_configured" };
+}
 
 function parseBody(req: VercelRequest): unknown | null {
   if (!req.body) return null;
@@ -14,46 +124,43 @@ function parseBody(req: VercelRequest): unknown | null {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method === "GET") {
-    const data = await readStoredContent();
-    if (!data) {
-      return res.status(404).json({ error: "not_found", storage: getStorageStatus() });
+  try {
+    if (req.method === "GET") {
+      const data = await readStoredContent();
+      if (!data) {
+        return res.status(404).json({ error: "not_found", storage: getStorageStatus() });
+      }
+      return res.status(200).json(data);
     }
-    return res.status(200).json(data);
+
+    if (req.method === "PUT") {
+      const password = req.headers["x-admin-password"];
+      const expected = process.env.ADMIN_PASSWORD ?? process.env.VITE_ADMIN_PASSWORD ?? "bliss2026";
+
+      if (typeof password !== "string" || password !== expected) {
+        return res.status(401).json({ error: "unauthorized" });
+      }
+
+      const body = parseBody(req);
+      if (!body || typeof body !== "object") {
+        return res.status(400).json({ error: "invalid_body" });
+      }
+
+      const result = await writeStoredContent(body);
+      if (!result.ok) {
+        return res.status(result.error === "storage_not_configured" ? 503 : 500).json({
+          error: result.error,
+          storage: getStorageStatus(),
+        });
+      }
+
+      return res.status(200).json({ ok: true, storage: getStorageStatus() });
+    }
+
+    res.setHeader("Allow", "GET, PUT");
+    return res.status(405).json({ error: "method_not_allowed" });
+  } catch (error) {
+    console.error("API /content failed:", error);
+    return res.status(500).json({ error: "internal_error", storage: getStorageStatus() });
   }
-
-  if (req.method === "PUT") {
-    const password = req.headers["x-admin-password"];
-    const expected = process.env.ADMIN_PASSWORD ?? process.env.VITE_ADMIN_PASSWORD ?? "bliss2026";
-
-    if (typeof password !== "string" || password !== expected) {
-      return res.status(401).json({ error: "unauthorized" });
-    }
-
-    const body = parseBody(req);
-    if (!body || typeof body !== "object") {
-      return res.status(400).json({ error: "invalid_body" });
-    }
-
-    const result = await writeStoredContent(body);
-    if (!result.ok) {
-      return res.status(result.error === "storage_not_configured" ? 503 : 500).json({
-        error: result.error,
-        storage: getStorageStatus(),
-      });
-    }
-
-    return res.status(200).json({ ok: true, storage: getStorageStatus() });
-  }
-
-  res.setHeader("Allow", "GET, PUT");
-  return res.status(405).json({ error: "method_not_allowed" });
 }
-
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "10mb",
-    },
-  },
-};
