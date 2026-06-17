@@ -44,23 +44,6 @@ const App = () => (
           <BrowserRouter>
             <CartProvider>
               <Routes>
-                <Route element={<MainLayout />}>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/category/:slug" element={<CategoryPage />} />
-                  <Route path="/product/:slug" element={<ProductPage />} />
-                  <Route path="/cart" element={<CartPage />} />
-                  <Route path="/collections" element={<CollectionsPage />} />
-                  <Route path="/collections/:slug" element={<CollectionDetailPage />} />
-                  <Route path="/kako-poruciti" element={<KakoPorucitiPage />} />
-                  <Route path="/politika-privatnosti" element={<PolitikaPrivatnostiPage />} />
-                  <Route path="/kontakt" element={<KontaktPage />} />
-                  <Route path="/o-nama" element={<ONamaPage />} />
-                  <Route path="/faq" element={<FAQPage />} />
-                  <Route path="/dostava-i-povrat" element={<DostavaPovratPage />} />
-                  <Route path="/uslovi-koriscenja" element={<UsloviKoriscenjaPage />} />
-                  <Route path="*" element={<NotFound />} />
-                </Route>
-
                 <Route path="/admin/login" element={<AdminLoginPage />} />
                 <Route
                   path="/admin"
@@ -77,6 +60,23 @@ const App = () => (
                   <Route path="pages" element={<AdminPagesPage />} />
                   <Route path="theme" element={<AdminThemePage />} />
                   <Route path="settings" element={<AdminSettingsPage />} />
+                </Route>
+
+                <Route element={<MainLayout />}>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/category/:slug" element={<CategoryPage />} />
+                  <Route path="/product/:slug" element={<ProductPage />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/collections" element={<CollectionsPage />} />
+                  <Route path="/collections/:slug" element={<CollectionDetailPage />} />
+                  <Route path="/kako-poruciti" element={<KakoPorucitiPage />} />
+                  <Route path="/politika-privatnosti" element={<PolitikaPrivatnostiPage />} />
+                  <Route path="/kontakt" element={<KontaktPage />} />
+                  <Route path="/o-nama" element={<ONamaPage />} />
+                  <Route path="/faq" element={<FAQPage />} />
+                  <Route path="/dostava-i-povrat" element={<DostavaPovratPage />} />
+                  <Route path="/uslovi-koriscenja" element={<UsloviKoriscenjaPage />} />
+                  <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>
             </CartProvider>
