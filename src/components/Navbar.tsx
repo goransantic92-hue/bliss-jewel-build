@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Menu, X, Instagram, ChevronDown } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import { CATEGORIES, NAV_MAIN_LINKS } from "@/data/site";
+import { useContent } from "@/context/ContentContext";
 import { cn } from "@/lib/utils";
 
 const Navbar = () => {
+  const { content } = useContent();
+  const { categories, nav } = content;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
   const [desktopCategoriesOpen, setDesktopCategoriesOpen] = useState(false);
@@ -14,8 +16,8 @@ const Navbar = () => {
   const { totalQuantity } = useCart();
 
   const closeDesktopCategories = useCallback(() => setDesktopCategoriesOpen(false), []);
-  const desktopLeftLinks = NAV_MAIN_LINKS.filter((link) => link.label !== "Bliss kolekcija");
-  const desktopCollectionsLink = NAV_MAIN_LINKS.find((link) => link.label === "Bliss kolekcija");
+  const desktopLeftLinks = nav.filter((link) => link.label !== "Bliss kolekcija");
+  const desktopCollectionsLink = nav.find((link) => link.label === "Bliss kolekcija");
 
   useEffect(() => {
     if (!desktopCategoriesOpen) return;
@@ -65,11 +67,11 @@ const Navbar = () => {
             <Link
               to="/"
               className="flex items-center justify-center overflow-visible pointer-events-auto"
-              aria-label="Bliss Nakit početna"
+              aria-label={`${content.site.name} početna`}
             >
               <img
                 src="/bliss-logo.webp"
-                alt="Bliss Nakit"
+                alt={content.site.name}
                 className="h-10 md:h-12 w-auto max-w-[min(220px,58vw)] object-contain object-center"
                 width={280}
                 height={280}
@@ -87,10 +89,7 @@ const Navbar = () => {
                 {desktopCollectionsLink.label}
               </Link>
             )}
-            <div
-              ref={desktopWrapRef}
-              className="relative hidden md:block mr-auto pr-2"
-            >
+            <div ref={desktopWrapRef} className="relative hidden md:block mr-auto pr-2">
               <button
                 type="button"
                 className={cn(
@@ -118,7 +117,7 @@ const Navbar = () => {
                   >
                     <div className="rounded-md border border-border bg-background shadow-lg py-2 px-1">
                       <ul className="space-y-0.5">
-                        {CATEGORIES.map((c) => (
+                        {categories.map((c) => (
                           <li key={c.slug}>
                             <Link
                               to={`/category/${c.slug}`}
@@ -138,11 +137,11 @@ const Navbar = () => {
 
             <div className="flex items-center gap-2 sm:gap-4 md:gap-5 shrink-0">
               <a
-                href="https://www.instagram.com/bliss_nakit/"
+                href={content.contact.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
-                aria-label="Bliss Nakit na Instagramu"
+                aria-label={`${content.site.name} na Instagramu`}
               >
                 <Instagram size={18} />
               </a>
@@ -173,7 +172,7 @@ const Navbar = () => {
             className="md:hidden overflow-hidden bg-background border-t border-border"
           >
             <div className="px-4 py-4 space-y-0">
-              {NAV_MAIN_LINKS.map((link) => (
+              {nav.map((link) => (
                 <div key={link.label}>
                   <Link
                     to={link.to}
@@ -204,7 +203,7 @@ const Navbar = () => {
                     transition={{ duration: 0.25 }}
                     className="overflow-hidden"
                   >
-                    {CATEGORIES.map((c) => (
+                    {categories.map((c) => (
                       <div key={c.slug} className="pl-3">
                         <Link
                           to={`/category/${c.slug}`}

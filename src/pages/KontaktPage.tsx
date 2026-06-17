@@ -1,40 +1,49 @@
 import { Link } from "react-router-dom";
 import { Instagram, Mail, MapPin } from "lucide-react";
+import { useContent } from "@/context/ContentContext";
 
 const KontaktPage = () => {
+  const { content } = useContent();
+  const { contact, pages } = content;
+
   return (
     <div className="bg-background min-h-[50vh]">
       <div className="max-w-[720px] mx-auto px-6 py-16 md:py-24">
-        <p className="text-xs tracking-[0.3em] uppercase text-primary mb-3 font-body">Bliss nakit</p>
-        <h1 className="font-display text-3xl md:text-4xl text-foreground mb-10">Kontakt</h1>
-        <ul className="space-y-8">
+        <p className="text-xs tracking-[0.3em] uppercase text-primary mb-3 font-body">{pages.kontakt.eyebrow}</p>
+        <h1 className="font-display text-3xl md:text-4xl text-foreground mb-6">{pages.kontakt.title}</h1>
+        {pages.kontakt.paragraphs.map((p, i) => (
+          <p key={i} className="text-sm text-muted-foreground font-body leading-relaxed mb-4">
+            {p}
+          </p>
+        ))}
+        <ul className="space-y-8 mt-10">
           <li>
             <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-2 font-body">Instagram</p>
             <a
-              href="https://www.instagram.com/bliss_nakit/"
+              href={contact.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors font-body"
             >
               <Instagram size={20} />
-              @bliss_nakit
+              {contact.instagram}
             </a>
           </li>
           <li>
             <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-2 font-body">E-mail</p>
             <a
-              href="mailto:bliss.jewelry.tt@gmail.com"
+              href={`mailto:${contact.email}`}
               className="inline-flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors font-body break-all"
             >
               <Mail size={20} className="shrink-0" />
-              bliss.jewelry.tt@gmail.com
+              {contact.email}
             </a>
           </li>
           <li>
             <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-2 font-body">Lokacija</p>
             <span className="inline-flex items-start gap-2 text-sm text-foreground font-body">
               <MapPin size={20} className="shrink-0 mt-0.5" />
-              Niš, Srbija
+              {contact.location}
             </span>
           </li>
         </ul>

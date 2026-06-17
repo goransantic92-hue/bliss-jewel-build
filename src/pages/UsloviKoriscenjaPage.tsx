@@ -1,9 +1,7 @@
 import { useContent } from "@/context/ContentContext";
 import StaticPageLayout from "@/components/StaticPageLayout";
 
-const KakoPorucitiPage = () => {
+export default function UsloviKoriscenjaPage() {
   const { content } = useContent();
-  return <StaticPageLayout page={content.pages.kakoPoruciti} />;
-};
-
-export default KakoPorucitiPage;
+  return <StaticPageLayout page={content.pages.uslovi} />;
+}

@@ -1,22 +1,11 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import ringsImg from "@/assets/collection-rings.jpg";
-import necklacesImg from "@/assets/collection-necklaces.jpg";
-import earringsImg from "@/assets/collection-earrings.jpg";
-import braceletsImg from "@/assets/collection-bracelets.jpg";
-import { CATEGORIES } from "@/data/site";
-import type { CategorySlug } from "@/data/site";
-import { LOREM_SHORT } from "@/data/site";
-
-const images: Record<CategorySlug, string> = {
-  ogrlice: necklacesImg,
-  mindjuse: earringsImg,
-  narukvice: braceletsImg,
-  brosevi: ringsImg,
-  aksesoari: earringsImg,
-};
+import { useContent } from "@/context/ContentContext";
 
 const CollectionsGrid = () => {
+  const { content } = useContent();
+  const { categoriesSection, categories } = content;
+
   return (
     <section id="collections" className="py-20 md:py-28 px-6 max-w-[1400px] mx-auto">
       <motion.div
@@ -26,13 +15,13 @@ const CollectionsGrid = () => {
         transition={{ duration: 0.6 }}
         className="text-center mb-14"
       >
-        <p className="text-xs tracking-[0.3em] uppercase text-primary mb-3 font-body">Lorem shop</p>
-        <h2 className="font-display text-3xl md:text-4xl text-foreground mb-4">Lorem collections</h2>
-        <p className="text-sm text-muted-foreground max-w-xl mx-auto font-body">{LOREM_SHORT}</p>
+        <p className="text-xs tracking-[0.3em] uppercase text-primary mb-3 font-body">{categoriesSection.eyebrow}</p>
+        <h2 className="font-display text-3xl md:text-4xl text-foreground mb-4">{categoriesSection.title}</h2>
+        <p className="text-sm text-muted-foreground max-w-xl mx-auto font-body">{categoriesSection.description}</p>
       </motion.div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-        {CATEGORIES.map((col, i) => (
+        {categories.map((col, i) => (
           <motion.div
             key={col.slug}
             initial={{ opacity: 0, y: 30 }}
@@ -45,8 +34,8 @@ const CollectionsGrid = () => {
               className="group relative aspect-[3/4] overflow-hidden cursor-pointer block"
             >
               <img
-                src={images[col.slug]}
-                alt=""
+                src={col.image}
+                alt={col.label}
                 loading="lazy"
                 width={800}
                 height={1000}

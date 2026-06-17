@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { toast } from "sonner";
-import { getProductBySlug } from "@/data/site";
+import { useContent } from "@/context/ContentContext";
 
 const STORAGE_KEY = "bliss-cart";
 
@@ -49,28 +49,32 @@ function loadFromStorage(): CartLine[] {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { getProductBySlug } = useContent();
   const [items, setItems] = useState<CartLine[]>(() => loadFromStorage());
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
-  const addItem = useCallback((slug: string, quantity = 1) => {
-    const product = getProductBySlug(slug);
-    if (!product) {
-      toast.error("Proizvod nije pronađen.");
-      return;
-    }
-    const q = Math.max(1, Math.floor(quantity));
-    setItems((prev) => {
-      const existing = prev.find((l) => l.slug === slug);
-      if (existing) {
-        return prev.map((l) => (l.slug === slug ? { ...l, quantity: l.quantity + q } : l));
+  const addItem = useCallback(
+    (slug: string, quantity = 1) => {
+      const product = getProductBySlug(slug);
+      if (!product) {
+        toast.error("Proizvod nije pronađen.");
+        return;
       }
-      return [...prev, { slug, quantity: q }];
-    });
-    toast.success("Dodato u korpu", { description: `${product.categoryLabel} · ${product.price}` });
-  }, []);
+      const q = Math.max(1, Math.floor(quantity));
+      setItems((prev) => {
+        const existing = prev.find((l) => l.slug === slug);
+        if (existing) {
+          return prev.map((l) => (l.slug === slug ? { ...l, quantity: l.quantity + q } : l));
+        }
+        return [...prev, { slug, quantity: q }];
+      });
+      toast.success("Dodato u korpu", { description: `${product.name} · ${product.price}` });
+    },
+    [getProductBySlug]
+  );
 
   const removeItem = useCallback((slug: string) => {
     setItems((prev) => prev.filter((l) => l.slug !== slug));
@@ -101,7 +105,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       sub += p.priceEur * line.quantity;
     }
     return { totalQuantity: qty, subtotalEur: sub };
-  }, [items]);
+  }, [items, getProductBySlug]);
 
   const value = useMemo(
     () => ({
@@ -124,4 +128,3 @@ export function useCart() {
   if (!ctx) throw new Error("useCart must be used within CartProvider");
   return ctx;
 }
-
