@@ -118,7 +118,12 @@ const Footer = () => {
               decoding="async"
             />
           </Link>
-          <p className="text-[10px] text-muted-foreground tracking-wide font-body text-center md:text-right">{site.copyright}</p>
+          <div className="flex flex-col items-center md:items-end gap-2">
+            <p className="text-[10px] text-muted-foreground tracking-wide font-body text-center md:text-right">{site.copyright}</p>
+            <Link to="/admin/login" className="text-[10px] text-muted-foreground/60 hover:text-primary font-body">
+              Admin
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
