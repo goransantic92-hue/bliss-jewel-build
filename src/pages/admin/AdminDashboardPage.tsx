@@ -47,7 +47,7 @@ export default function AdminDashboardPage() {
         </Card>
       </div>
       <p className="text-xs text-muted-foreground mt-8 font-body">
-        Promene se automatski čuvaju u pregledaču. Za objavu na serveru koristite Export u podešavanjima.
+        Promene se automatski čuvaju na server i vide ih svi posetioci sajta. Prvi put u Vercel dashboardu dodaj Blob storage (Storage → Blob).
       </p>
     </div>
   );

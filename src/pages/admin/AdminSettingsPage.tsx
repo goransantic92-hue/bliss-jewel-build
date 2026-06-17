@@ -85,9 +85,9 @@ export default function AdminSettingsPage() {
       </section>
 
       <section className="space-y-4 border-t border-border pt-10">
-        <h2 className="font-display text-xl">Export / Import</h2>
+        <h2 className="font-display text-xl">Export / Import (backup)</h2>
         <p className="text-sm text-muted-foreground font-body">
-          Exportujte sadržaj kao JSON i postavite ga u <code className="text-xs">public/site-content.json</code> za objavu na serveru.
+          Sadržaj se automatski čuva na Vercel serveru. Export/Import služi kao rezervna kopija.
         </p>
         <div className="flex flex-wrap gap-3">
           <Button onClick={() => downloadJson(content, "site-content.json")}>Export JSON</Button>
@@ -109,10 +109,12 @@ export default function AdminSettingsPage() {
         <input ref={importRef} type="file" accept=".json" className="hidden" onChange={(e) => handleImport(e.target.files?.[0])} />
       </section>
 
-      <section className="mt-10 p-4 bg-muted/30 rounded text-xs text-muted-foreground font-body">
+      <section className="mt-10 p-4 bg-muted/30 rounded text-xs text-muted-foreground font-body space-y-2">
         <p>
-          Admin lozinka se postavlja u <code>.env</code> fajlu kao <code>VITE_ADMIN_PASSWORD</code>. Podrazumevana lozinka je{" "}
-          <code>bliss2026</code>.
+          Admin lozinka: <code>VITE_ADMIN_PASSWORD</code> i <code>ADMIN_PASSWORD</code> u Vercel Environment Variables.
+        </p>
+        <p>
+          Za live čuvanje obavezno uključi <strong>Vercel Blob</strong> storage za projekat (Vercel → Storage → Create → Blob).
         </p>
       </section>
     </div>

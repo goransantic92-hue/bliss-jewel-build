@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Package, Home, Layers, FileText, Palette, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useContent } from "@/context/ContentContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -16,8 +17,18 @@ const NAV = [
 
 export default function AdminLayout() {
   const { logout } = useAuth();
+  const { saveStatus } = useContent();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const saveLabel =
+    saveStatus === "saving"
+      ? "Čuvanje na server..."
+      : saveStatus === "saved"
+        ? "Sačuvano — vidljivo svima na sajtu"
+        : saveStatus === "error"
+          ? "Greška pri čuvanju"
+          : null;
 
   const handleLogout = () => {
     logout();
@@ -62,6 +73,16 @@ export default function AdminLayout() {
         </div>
       </aside>
       <main className="flex-1 overflow-auto">
+        {saveLabel && (
+          <div
+            className={cn(
+              "px-6 py-2 text-xs font-body border-b",
+              saveStatus === "error" ? "bg-destructive/10 text-destructive border-destructive/20" : "bg-primary/10 text-primary border-primary/20"
+            )}
+          >
+            {saveLabel}
+          </div>
+        )}
         <div className="max-w-5xl mx-auto p-6 md:p-10">
           <Outlet />
         </div>

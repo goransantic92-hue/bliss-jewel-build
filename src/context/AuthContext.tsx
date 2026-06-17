@@ -9,12 +9,14 @@ import {
 } from "react";
 
 const SESSION_KEY = "bliss-admin-session";
+const PASSWORD_KEY = "bliss-admin-password";
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD ?? "bliss2026";
 
 type AuthContextValue = {
   isAdmin: boolean;
   login: (password: string) => boolean;
   logout: () => void;
+  getAdminPassword: () => string | null;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -24,11 +26,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (isAdmin) sessionStorage.setItem(SESSION_KEY, "1");
-    else sessionStorage.removeItem(SESSION_KEY);
+    else {
+      sessionStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem(PASSWORD_KEY);
+    }
   }, [isAdmin]);
 
   const login = useCallback((password: string) => {
     if (password === ADMIN_PASSWORD) {
+      sessionStorage.setItem(PASSWORD_KEY, password);
       setIsAdmin(true);
       return true;
     }
@@ -37,7 +43,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => setIsAdmin(false), []);
 
-  const value = useMemo(() => ({ isAdmin, login, logout }), [isAdmin, login, logout]);
+  const getAdminPassword = useCallback(() => sessionStorage.getItem(PASSWORD_KEY), []);
+
+  const value = useMemo(
+    () => ({ isAdmin, login, logout, getAdminPassword }),
+    [isAdmin, login, logout, getAdminPassword]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
