@@ -183,10 +183,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const result = await writeStoredContent(body);
-      if (!result.ok) {
-        const { error } = result;
-        return res.status(error === "storage_not_configured" ? 503 : 500).json({
-          error,
+      if (result.ok === false) {
+        return res.status(result.error === "storage_not_configured" ? 503 : 500).json({
+          error: result.error,
           storage: getStorageStatus(),
         });
       }
