@@ -1,25 +1,49 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { createClient, type RedisClientType } from "redis";
 
 const STORAGE_KEY = "bliss-site-content";
 const BLOB_PATHNAME = "bliss-site-content.json";
 
 type StorageError = "storage_not_configured" | "write_failed";
 
-function redisConfig() {
+function getStorageStatus(): "redis" | "blob" | "upstash" | "none" {
+  if (process.env.REDIS_URL) return "redis";
+  if (process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL) return "upstash";
+  if (process.env.BLOB_READ_WRITE_TOKEN) return "blob";
+  return "none";
+}
+
+async function withRedis<T>(fn: (client: RedisClientType) => Promise<T>): Promise<T | null> {
+  const url = process.env.REDIS_URL;
+  if (!url) return null;
+
+  const client = createClient({ url });
+  client.on("error", (error) => console.error("Redis client error:", error));
+
+  try {
+    await client.connect();
+    return await fn(client as RedisClientType);
+  } catch (error) {
+    console.error("Redis operation failed:", error);
+    return null;
+  } finally {
+    try {
+      await client.quit();
+    } catch {
+      // ignore disconnect errors
+    }
+  }
+}
+
+function upstashConfig() {
   const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
   if (!url || !token) return null;
   return { url: url.replace(/\/$/, ""), token };
 }
 
-function getStorageStatus(): "redis" | "blob" | "none" {
-  if (redisConfig()) return "redis";
-  if (process.env.BLOB_READ_WRITE_TOKEN) return "blob";
-  return "none";
-}
-
-async function redisCommand<T>(command: (string | number)[]): Promise<T | null> {
-  const cfg = redisConfig();
+async function upstashCommand<T>(command: (string | number)[]): Promise<T | null> {
+  const cfg = upstashConfig();
   if (!cfg) return null;
 
   const res = await fetch(cfg.url, {
@@ -37,24 +61,36 @@ async function redisCommand<T>(command: (string | number)[]): Promise<T | null> 
 }
 
 async function readFromRedis(): Promise<unknown | null> {
+  if (process.env.REDIS_URL) {
+    const raw = await withRedis(async (client) => client.get(STORAGE_KEY));
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as unknown;
+    } catch {
+      return null;
+    }
+  }
+
   try {
-    const raw = await redisCommand<string>(["GET", STORAGE_KEY]);
+    const raw = await upstashCommand<string>(["GET", STORAGE_KEY]);
     if (!raw) return null;
     return JSON.parse(raw) as unknown;
   } catch (error) {
-    console.error("Redis read failed:", error);
+    console.error("Upstash read failed:", error);
     return null;
   }
 }
 
 async function writeToRedis(data: unknown): Promise<boolean> {
-  try {
-    const result = await redisCommand<string>(["SET", STORAGE_KEY, JSON.stringify(data)]);
+  const payload = JSON.stringify(data);
+
+  if (process.env.REDIS_URL) {
+    const result = await withRedis(async (client) => client.set(STORAGE_KEY, payload));
     return result === "OK";
-  } catch (error) {
-    console.error("Redis write failed:", error);
-    return false;
   }
+
+  const result = await upstashCommand<string>(["SET", STORAGE_KEY, payload]);
+  return result === "OK";
 }
 
 async function readFromBlob(): Promise<unknown | null> {
@@ -98,7 +134,7 @@ async function readStoredContent(): Promise<unknown | null> {
 }
 
 async function writeStoredContent(data: unknown): Promise<{ ok: true } | { ok: false; error: StorageError }> {
-  if (redisConfig()) {
+  if (process.env.REDIS_URL || upstashConfig()) {
     const ok = await writeToRedis(data);
     return ok ? { ok: true } : { ok: false, error: "write_failed" };
   }
