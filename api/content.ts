@@ -63,7 +63,7 @@ async function upstashCommand<T>(command: (string | number)[]): Promise<T | null
 async function readFromRedis(): Promise<unknown | null> {
   if (process.env.REDIS_URL) {
     const raw = await withRedis(async (client) => client.get(STORAGE_KEY));
-    if (!raw) return null;
+    if (!raw || typeof raw !== "string") return null;
     try {
       return JSON.parse(raw) as unknown;
     } catch {
@@ -184,8 +184,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       const result = await writeStoredContent(body);
       if (!result.ok) {
-        return res.status(result.error === "storage_not_configured" ? 503 : 500).json({
-          error: result.error,
+        const { error } = result;
+        return res.status(error === "storage_not_configured" ? 503 : 500).json({
+          error,
           storage: getStorageStatus(),
         });
       }
