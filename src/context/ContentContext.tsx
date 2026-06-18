@@ -116,7 +116,15 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
       if (result.error === "storage_not_configured") {
         toast.error("Server storage nije podešen", {
-          description: "U Vercel → Storage dodaj KV ili Blob. Do tada promene su samo u ovom pregledaču.",
+          description: "U Vercel → Storage dodaj Blob. Do tada promene su samo u ovom pregledaču.",
+        });
+      } else if (result.error === "unauthorized") {
+        toast.error("Sesija je istekla", {
+          description: "Odjavite se i prijavite ponovo sa admin lozinkom.",
+        });
+      } else if (result.error === "payload_too_large") {
+        toast.error("Sadržaj je prevelik za čuvanje", {
+          description: "Koristite Upload za slike umesto ugrađivanja. Uklonite stare ugrađene slike ako ih ima.",
         });
       } else if (result.error === "network_error") {
         toast.error("Nema konekcije sa serverom — sačuvano lokalno u pregledaču");

@@ -27,9 +27,9 @@ export default function AdminLayout() {
       : saveStatus === "saved"
         ? "Sačuvano — vidljivo svima na sajtu"
         : saveStatus === "local_only"
-          ? "Samo u ovom pregledaču — dodaj Upstash Redis u Vercel Storage"
+          ? "Samo u ovom pregledaču — storage nije dostupan"
           : saveStatus === "error"
-            ? "Greška pri čuvanju — proveri storage u Vercelu"
+            ? "Greška pri čuvanju — odjavi se, prijavi ponovo ili smanji slike"
             : null;
 
   const handleLogout = () => {

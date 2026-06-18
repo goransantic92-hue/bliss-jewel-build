@@ -1,8 +1,10 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { fileToDataUrl } from "@/lib/contentUtils";
+import { useAuth } from "@/context/AuthContext";
+import { uploadMedia } from "@/lib/contentApi";
+import { toast } from "sonner";
 
 type MediaInputProps = {
   label: string;
@@ -14,11 +16,38 @@ type MediaInputProps = {
 
 export function MediaInput({ label, value, onChange, accept = "image/*,video/*", hint }: MediaInputProps) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const { getAdminPassword } = useAuth();
+  const [uploading, setUploading] = useState(false);
 
   const handleFile = async (file: File | undefined) => {
     if (!file) return;
-    const dataUrl = await fileToDataUrl(file);
-    onChange(dataUrl);
+
+    const password = getAdminPassword();
+    if (!password) {
+      toast.error("Ponovo se prijavite u admin panel");
+      return;
+    }
+
+    setUploading(true);
+    const result = await uploadMedia(file, password);
+    setUploading(false);
+
+    if (result.ok && result.url) {
+      onChange(result.url);
+      return;
+    }
+
+    if (result.error === "file_too_large") {
+      toast.error("Fajl je prevelik", { description: "Maksimum je oko 4 MB po slici." });
+      return;
+    }
+
+    if (result.error === "unauthorized") {
+      toast.error("Sesija je istekla", { description: "Odjavite se i prijavite ponovo." });
+      return;
+    }
+
+    toast.error("Upload nije uspeo", { description: "Proverite konekciju i pokušajte ponovo." });
   };
 
   return (
@@ -26,8 +55,8 @@ export function MediaInput({ label, value, onChange, accept = "image/*,video/*",
       <Label>{label}</Label>
       <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder="URL ili upload fajla" />
       <div className="flex gap-2">
-        <Button type="button" variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
-          Upload
+        <Button type="button" variant="outline" size="sm" disabled={uploading} onClick={() => fileRef.current?.click()}>
+          {uploading ? "Upload..." : "Upload"}
         </Button>
         {value && (
           <Button type="button" variant="ghost" size="sm" onClick={() => onChange("")}>
